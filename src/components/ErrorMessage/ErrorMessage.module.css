@@ -1,0 +1,13 @@
+.errorContainer {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  padding: 16px;
+  border-radius: 6px;
+  margin: 20px 0;
+}
+
+.text {
+  color: #c62828;
+  margin: 0;
+  font-weight: 500;
+}

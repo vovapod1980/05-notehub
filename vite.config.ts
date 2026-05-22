@@ -13,4 +13,5 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
+  base: "/https://vovapod1980.github.io/05-notehub//",
 });

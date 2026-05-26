@@ -4,8 +4,6 @@ import type { Note, NewNoteData } from "../types/note";
 export interface PaginatedNotesResponse {
   notes: Note[];
   totalPages: number;
-  page: number;
-  perPage: number;
 }
 
 export interface FetchNotesParams {
@@ -14,7 +12,7 @@ export interface FetchNotesParams {
   search?: string;
 }
 
-const AUTH_TOKEN = import.meta.env.VITE_TOKEN;
+const AUTH_TOKEN = import.meta.env.VITE_NOTEHUB_TOKEN;
 
 const getAuthConfig = () => ({
   headers: {

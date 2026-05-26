@@ -36,7 +36,7 @@ export default function App() {
   const handleAddNote = async (noteData: {
     title: string;
     content: string;
-    tag?: string;
+    tag: string;
   }): Promise<void> => {
     try {
       await addNote(noteData);

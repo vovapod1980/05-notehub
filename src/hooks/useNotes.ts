@@ -22,7 +22,7 @@ export default function useNotes(perPage: number) {
         perPage,
         search: searchQuery,
       });
-      return response.data;
+      return response;
     },
     // 2. ЗАМІСТЬ keepPreviousData: true ПИШЕМО:
     placeholderData: keepPreviousData,

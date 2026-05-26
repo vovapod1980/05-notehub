@@ -1,6 +1,12 @@
-import type { AxiosResponse } from "axios";
 import notehubApi from "../api/notehub";
-import type { Note, NewNoteData, PaginatedNotesResponse } from "../types/note";
+import type { Note, NewNoteData } from "../types/note";
+
+export interface PaginatedNotesResponse {
+  notes: Note[];
+  totalPages: number;
+  page: number;
+  perPage: number;
+}
 
 export interface FetchNotesParams {
   page: number;
@@ -8,21 +14,37 @@ export interface FetchNotesParams {
   search?: string;
 }
 
-// Якщо бекенд повертає об'єкт типу PaginatedNotesResponse:
+const AUTH_TOKEN = import.meta.env.VITE_TOKEN;
+
+const getAuthConfig = () => ({
+  headers: {
+    Authorization: `Bearer ${AUTH_TOKEN}`,
+  },
+});
+
 export const fetchNotes = async (
   params: FetchNotesParams,
-): Promise<AxiosResponse<PaginatedNotesResponse>> => {
-  return notehubApi.get<PaginatedNotesResponse>("/notes", { params });
+): Promise<PaginatedNotesResponse> => {
+  const response = await notehubApi.get<PaginatedNotesResponse>("/notes", {
+    params,
+    ...getAuthConfig(), // Додано заголовок авторизації
+  });
+  return response.data;
 };
 
-export const createNote = async (
-  noteData: NewNoteData,
-): Promise<AxiosResponse<Note>> => {
-  return notehubApi.post<Note>("/notes", noteData);
+export const createNote = async (noteData: NewNoteData): Promise<Note> => {
+  const response = await notehubApi.post<Note>(
+    "/notes",
+    noteData,
+    getAuthConfig(),
+  );
+  return response.data;
 };
 
-export const deleteNote = async (
-  id: string | number,
-): Promise<AxiosResponse<Note>> => {
-  return notehubApi.delete<Note>(`/notes/${id}`);
+export const deleteNote = async (id: string | number): Promise<Note> => {
+  const response = await notehubApi.delete<Note>(
+    `/notes/${id}`,
+    getAuthConfig(),
+  );
+  return response.data;
 };

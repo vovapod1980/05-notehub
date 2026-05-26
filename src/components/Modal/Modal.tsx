@@ -14,6 +14,10 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
+    // Блокуємо прокручування сторінки при відкритті модалки
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (e.key === "Escape") {
         onClose();
@@ -21,8 +25,11 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
+    // Функція очищення: знімаємо слухач подій та відновлюємо скрол
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalStyle;
     };
   }, [isOpen, onClose]);
 

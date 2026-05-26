@@ -1,12 +1,27 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteNote } from "../../services/noteService";
 import type { Note } from "../../types/note";
 import css from "./NoteList.module.css";
 
 interface NoteListProps {
-  notes: Note[];
-  onDelete: (id: string | number) => void;
+  notes: Note[]; // Проп onDelete повністю видалено
 }
 
-export default function NoteList({ notes, onDelete }: NoteListProps) {
+export default function NoteList({ notes }: NoteListProps) {
+  const queryClient = useQueryClient();
+
+  // Налаштування мутації для видалення нотатки
+  const mutation = useMutation({
+    mutationFn: deleteNote,
+    onSuccess: () => {
+      // Оновлюємо кеш списку нотаток після успішного видалення
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+    onError: (err) => {
+      console.error("Помилка при видаленні нотатки:", err);
+    },
+  });
+
   return (
     <ul className={css.list}>
       {notes.map((note) => (
@@ -14,10 +29,14 @@ export default function NoteList({ notes, onDelete }: NoteListProps) {
           <h2 className={css.title}>{note.title}</h2>
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
-            {/* Рендеримо тег лише якщо він існує */}
-            <span className={css.tag}>{note.tag || "no tag"}</span>
-            <button className={css.button} onClick={() => onDelete(note.id)}>
-              Delete
+            {/* Тег тепер обов'язковий за новими типами */}
+            <span className={css.tag}>{note.tag}</span>
+            <button
+              className={css.button}
+              onClick={() => mutation.mutate(note.id)}
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Deleting..." : "Delete"}
             </button>
           </div>
         </li>

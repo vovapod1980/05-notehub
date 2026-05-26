@@ -15,6 +15,7 @@ const ITEMS_PER_PAGE = 12;
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  // Виправлено: видалено removeNote, оскільки видалення тепер працює через useMutation в NoteList
   const {
     notes,
     totalPages,
@@ -24,7 +25,6 @@ export default function App() {
     isLoading,
     isError,
     errorMessage,
-    removeNote,
   } = useNotes(ITEMS_PER_PAGE);
 
   const debouncedSearchHandler = useDebouncedCallback((value: string) => {
@@ -57,7 +57,8 @@ export default function App() {
         {isLoading ? (
           <Loader />
         ) : (
-          notes.length > 0 && <NoteList notes={notes} onDelete={removeNote} />
+          notes.length > 0 && <NoteList notes={notes} />
+          /* Виправлено: видалено onDelete={removeNote} */
         )}
       </main>
 

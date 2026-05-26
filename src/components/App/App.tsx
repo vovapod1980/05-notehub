@@ -24,7 +24,6 @@ export default function App() {
     isLoading,
     isError,
     errorMessage,
-    addNote,
     removeNote,
   } = useNotes(ITEMS_PER_PAGE);
 
@@ -32,19 +31,6 @@ export default function App() {
     setSearchQuery(value);
     setCurrentPage(1);
   }, 500);
-
-  const handleAddNote = async (noteData: {
-    title: string;
-    content: string;
-    tag: string;
-  }): Promise<void> => {
-    try {
-      await addNote(noteData);
-      setIsModalOpen(false);
-    } catch (err: unknown) {
-      console.error("Помилка при додаванні нотатки:", err);
-    }
-  };
 
   return (
     <div className={css.app}>
@@ -76,7 +62,7 @@ export default function App() {
       </main>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <NoteForm onAdd={handleAddNote} onClose={() => setIsModalOpen(false)} />
+        <NoteForm onClose={() => setIsModalOpen(false)} />
       </Modal>
     </div>
   );

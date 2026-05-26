@@ -1,11 +1,10 @@
 import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
 import * as Yup from "yup";
-// Додаємо префікс type перед імпортом типу з нашого файлу типів
-import { type NewNoteData } from "../../types/note";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../services/noteService";
 import css from "./NoteForm.module.css";
 
 interface NoteFormProps {
-  onAdd: (noteData: NewNoteData) => Promise<void>;
   onClose: () => void;
 }
 
@@ -35,13 +34,25 @@ const initialValues: FormValues = {
   tag: "Todo",
 };
 
-export default function NoteForm({ onAdd, onClose }: NoteFormProps) {
+export default function NoteForm({ onClose }: NoteFormProps) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      onClose();
+    },
+    onError: (err) => {
+      console.error("Помилка при додаванні нотатки:", err);
+    },
+  });
+
   const handleSubmit = async (
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>,
   ): Promise<void> => {
-    // Мапимо значення форми 'content' на поле 'text', яке очікує бекенд
-    await onAdd({
+    mutation.mutate({
       title: values.title,
       content: values.content,
       tag: values.tag,
@@ -96,15 +107,16 @@ export default function NoteForm({ onAdd, onClose }: NoteFormProps) {
               type="button"
               className={css.cancelButton}
               onClick={onClose}
+              disabled={mutation.isPending}
             >
               Cancel
             </button>
             <button
               type="submit"
               className={css.submitButton}
-              disabled={isSubmitting}
+              disabled={isSubmitting || mutation.isPending}
             >
-              Create note
+              {mutation.isPending ? "Creating..." : "Create note"}
             </button>
           </div>
         </Form>

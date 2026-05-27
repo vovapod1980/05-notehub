@@ -15,7 +15,6 @@ const ITEMS_PER_PAGE = 12;
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Виправлено: видалено removeNote, оскільки видалення тепер працює через useMutation в NoteList
   const {
     notes,
     totalPages,
@@ -37,7 +36,6 @@ export default function App() {
       <header className={css.toolbar}>
         <SearchBox onChange={debouncedSearchHandler} />
 
-        {/* Умова: рендеримо пагінацію, лише якщо кількість сторінок більше 1 */}
         {!isLoading && !isError && totalPages > 1 && (
           <Pagination
             pageCount={totalPages}
@@ -58,13 +56,14 @@ export default function App() {
           <Loader />
         ) : (
           notes.length > 0 && <NoteList notes={notes} />
-          /* Виправлено: видалено onDelete={removeNote} */
         )}
       </main>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <NoteForm onClose={() => setIsModalOpen(false)} />
-      </Modal>
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <NoteForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
+      )}
     </div>
   );
 }

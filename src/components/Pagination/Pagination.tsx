@@ -1,4 +1,15 @@
+import type { ComponentType } from "react";
+import ReactPaginateModule from "react-paginate";
+import type { ReactPaginateProps } from "react-paginate";
 import css from "./Pagination.module.css";
+
+type ModuleWithDefault<T> = { default: T };
+
+const ReactPaginate = (
+  ReactPaginateModule as unknown as ModuleWithDefault<
+    ComponentType<ReactPaginateProps>
+  >
+).default;
 
 interface PaginationProps {
   pageCount: number;
@@ -14,49 +25,35 @@ export default function Pagination({
   const cleanPageCount = Math.floor(Number(pageCount) || 0);
   const cleanCurrentPage = Math.floor(Number(currentPage) || 1);
 
-  // Умова з ТЗ: якщо сторінок менше або рівно 1, нічого не рендеримо
   if (cleanPageCount <= 1) {
     return null;
   }
 
-  // Генеруємо масив із номерами сторінок, наприклад [1, 2, 3, 4, 5]
-  const pages = Array.from({ length: cleanPageCount }, (_, i) => i + 1);
+  const handlePageClick = (selectedItem: { selected: number }) => {
+    onPageChange(selectedItem.selected + 1);
+  };
 
   return (
     <nav className={css.paginationContainer}>
-      {/* Кнопка "Назад" */}
-      <button
-        className={css.pageLink}
-        disabled={cleanCurrentPage === 1}
-        onClick={() => onPageChange(cleanCurrentPage - 1)}
-      >
-        &lt; previous
-      </button>
-
-      {/* Список сторінок */}
-      <ul className={css.paginationList}>
-        {pages.map((page) => (
-          <li key={page} className={css.pageItem}>
-            <button
-              className={`${css.pageLink} ${
-                page === cleanCurrentPage ? css.active : ""
-              }`}
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {/* Кнопка "Вперед" */}
-      <button
-        className={css.pageLink}
-        disabled={cleanCurrentPage === cleanPageCount}
-        onClick={() => onPageChange(cleanCurrentPage + 1)}
-      >
-        next &gt;
-      </button>
+      <ReactPaginate
+        pageCount={cleanPageCount}
+        onPageChange={handlePageClick}
+        forcePage={cleanCurrentPage - 1}
+        previousLabel="< previous"
+        nextLabel="next >"
+        breakLabel="..."
+        containerClassName={css.paginationList}
+        pageClassName={css.pageItem}
+        pageLinkClassName={css.pageLink}
+        previousClassName={css.pageItem}
+        previousLinkClassName={css.pageLink}
+        nextClassName={css.pageItem}
+        nextLinkClassName={css.pageLink}
+        breakClassName={css.pageItem}
+        breakLinkClassName={css.pageLink}
+        activeClassName={css.active}
+        disabledClassName={css.disabled}
+      />
     </nav>
   );
 }
